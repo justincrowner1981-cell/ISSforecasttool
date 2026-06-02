@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Indeck Silver Springs DAM Margin Website</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <div class="logo-mark">ISS</div>
+      <div>
+        <h1>Indeck Silver Springs Margin Website</h1>
+        <p>NYISO DAM · Weather · Natural Gas · Dispatch Profitability</p>
+      </div>
+    </div>
+    <nav class="nav">
+      <button data-page="dashboard" class="active">Dashboard</button>
+      <button data-page="sources">Data Sources</button>
+      <button data-page="inputs">Plant Inputs</button>
+      <button data-page="scenarios">Scenarios</button>
+      <button data-page="forecast">Forecast</button>
+      <button data-page="reports">Reports</button>
+      <button data-page="training">Historical Training</button>
+      <button data-page="education">Market Education</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="dashboard" class="page active">
+      <div class="hero">
+        <div>
+          <h2>7-Day Day-Ahead Run Margin Forecast</h2>
+          <p class="muted">Decision-support website for evaluating whether Indeck Silver Springs should run against NYISO Day-Ahead Market pricing.</p>
+        </div>
+        <div class="badge warning">Demo data active until live/CSV sources are configured</div>
+      </div>
+
+      <div class="cards">
+        <article class="card"><span>Avg DAM LBMP</span><strong id="kpiAvgLbmp">$0.00</strong><small>$/MWh</small></article>
+        <article class="card"><span>Gas Price</span><strong id="kpiGas">$0.00</strong><small>$/MMBtu incl. basis</small></article>
+        <article class="card"><span>Best Run Block</span><strong id="kpiBestBlock">--</strong><small>Min-run constrained</small></article>
+        <article class="card"><span>Expected Net Profit</span><strong id="kpiNet">$0</strong><small>Selected block</small></article>
+        <article class="card"><span>Profitable Hours</span><strong id="kpiProfitable">0</strong><small>Hourly margin &gt; threshold</small></article>
+        <article class="card"><span>Weather</span><strong id="kpiWeather">--</strong><small>Local forecast proxy</small></article>
+        <article class="card"><span>Profit Probability</span><strong id="kpiConfidence">--</strong><small>Monte Carlo / analog model</small></article>
+      </div>
+
+      <div class="grid two">
+        <section class="panel">
+          <div class="panel-head"><h3>Hourly DAM LBMP vs Variable Cost</h3><span class="pill">$/MWh</span></div>
+          <canvas id="priceChart" height="230"></canvas>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><h3>Projected Net Profit by Hour</h3><span class="pill">$/hr</span></div>
+          <canvas id="profitChart" height="230"></canvas>
+        </section>
+      </div>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Recommended Run Windows</h3><span class="pill" id="scenarioNamePill">Base Scenario</span></div>
+        <div id="runBlocks" class="run-blocks"></div>
+      </section>
+    </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Forecast Confidence</h3><span class="pill">P10 / P50 / P90</span></div>
+        <div id="confidencePanel" class="confidence-grid"></div>
+      </section>
+
+    </section>
+
+    <section id="sources" class="page">
+      <h2>Data Sources</h2>
+      <p class="muted">Set the market location, weather location, gas hub, API details, or upload CSV files. Live pulls can be connected later through serverless functions, but CSV import works now.</p>
+      <div class="grid two">
+        <form class="panel form-grid" id="sourceForm">
+          <label>Plant Name <input name="plantName" /></label>
+          <label>NYISO PTID / Bus / Zone <input name="nyisoLocation" /></label>
+          <label>Weather Location <input name="weatherLocation" /></label>
+          <label>Gas Hub <input name="gasHub" /></label>
+          <label>NYISO CSV/API URL <input name="nyisoUrl" placeholder="Optional URL or MIS CSV endpoint" /></label>
+          <label>Weather API Key / URL <input name="weatherUrl" placeholder="Optional" /></label>
+          <label>Gas Price API / CSV URL <input name="gasUrl" placeholder="Optional" /></label>
+          <label>NG Forecast URL <input name="gasForecastUrl" placeholder="Optional" /></label>
+          <label>EIA Free API Key <input name="eiaApiKey" placeholder="Free key from EIA Open Data" /></label>
+          <label>NCEI Free Token <input name="nceiToken" placeholder="Free token from NOAA/NCEI CDO" /></label>
+          <label>Plant Latitude <input name="plantLat" type="number" step="0.000001" /></label>
+          <label>Plant Longitude <input name="plantLon" type="number" step="0.000001" /></label>
+          <label>NYISO DAM Endpoint Pattern <input name="nyisoDamPattern" placeholder="Optional override" /></label>
+          <label>NYISO RT Endpoint Pattern <input name="nyisoRtPattern" placeholder="Optional override" /></label>
+          <button type="submit">Save Data Source Settings</button>
+          <button type="button" id="testFreeApis">Test Free API Connectors</button>
+        </form>
+
+        <div class="panel">
+          <h3>CSV Import Fallback</h3>
+          <p class="muted">Expected columns: <code>hour, lbmp, gas, temperature, condition</code>. Missing columns fall back to demo values.</p>
+          <input id="csvFile" type="file" accept=".csv" />
+          <div class="button-row">
+            <button id="loadCsv">Import CSV</button>
+            <button id="resetDemo">Reset Demo Data</button>
+            <button id="pullNws">Pull NWS Forecast</button>
+            <button id="pullEia">Pull EIA Gas</button>
+          </div>
+          <div id="sourceStatus" class="status-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="inputs" class="page">
+      <h2>Plant Inputs</h2>
+      <p class="muted">Edit the plant economics. Every saved value flows into the forecast and audit panel.</p>
+      <div class="grid two">
+        <form class="panel form-grid" id="plantForm"></form>
+        <aside class="panel">
+          <div class="panel-head"><h3>Assumptions Audit</h3><span class="pill">Live from inputs</span></div>
+          <div id="auditPanel" class="audit"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="scenarios" class="page">
+      <h2>Scenario Engine</h2>
+      <p class="muted">Compare price, weather, derate, and cost sensitivities. This is the little dispatch gremlin that asks, “what if gas jumps?” before the market does.</p>
+      <div class="grid two">
+        <form class="panel form-grid" id="scenarioForm">
+          <label>Scenario
+            <select name="scenarioName">
+              <option>Base</option>
+              <option>Bull Gas</option>
+              <option>Bear Gas</option>
+              <option>High Load / Weather</option>
+              <option>Low Load / Weather</option>
+              <option>Custom</option>
+            </select>
+          </label>
+          <label>Gas Price Multiplier <input name="gasMultiplier" type="number" step="0.01" /></label>
+          <label>DAM LBMP Multiplier <input name="lbmpMultiplier" type="number" step="0.01" /></label>
+          <label>Weather / Load Adder $/MWh <input name="weatherAdder" type="number" step="0.01" /></label>
+          <label>Outage Derate % <input name="derate" type="number" step="0.1" /></label>
+          <label>Startup Cost Override $ <input name="startupOverride" type="number" step="1" /></label>
+          <button type="submit">Apply Scenario</button>
+        </form>
+        <div class="panel">
+          <h3>Scenario Comparison</h3>
+          <div id="scenarioCompare" class="scenario-compare"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="forecast" class="page">
+      <div class="panel-head">
+        <div>
+          <h2>Forecast Results</h2>
+          <p class="muted">Hourly margin forecast with NYISO DAM price, fuel cost, all-in cost, and recommended dispatch status.</p>
+        </div>
+        <button id="downloadCsv">Export CSV</button>
+      </div>
+      <div class="table-wrap">
+        <table id="forecastTable">
+          <thead>
+            <tr>
+              <th>Hour</th><th>DAM LBMP</th><th>Gas</th><th>Fuel Cost</th><th>All-In Cost</th><th>Margin</th><th>MW</th><th>Gross Profit</th><th>Start/No-Load Alloc.</th><th>Net Profit</th><th>Status</th><th>Source</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="reports" class="page">
+      <h2>Reports</h2>
+      <div class="grid two">
+        <div class="panel">
+          <h3>Printable Summary</h3>
+          <p class="muted">Use the browser print dialog to save this report as PDF.</p>
+          <button id="printReport">Print / Save PDF</button>
+          <button id="copySummary">Copy Executive Summary</button>
+        </div>
+        <div class="panel report" id="reportSummary"></div>
+      </div>
+    </section>
+
+
+    <section id="training" class="page">
+      <h2>Historical Training</h2>
+      <p class="muted">Build a stronger forecast by storing historical NYISO price, gas, weather, and plant outcome data. This version uses free APIs and browser storage. For production-scale history, connect the exported files to Supabase/Postgres later.</p>
+      <div class="grid two">
+        <div class="panel">
+          <h3>Free Data Connectors</h3>
+          <div class="status-list">
+            <div class="status-row"><span>NYISO MIS</span><strong>Free public CSV/MIS data · manual endpoint pattern supported</strong></div>
+            <div class="status-row"><span>EIA Open Data</span><strong>Free API key · gas and energy fundamentals</strong></div>
+            <div class="status-row"><span>NWS Forecast API</span><strong>Free · no key · hourly weather forecast</strong></div>
+            <div class="status-row"><span>NOAA/NCEI CDO</span><strong>Free token · historical weather</strong></div>
+          </div>
+          <div class="button-row">
+            <button id="buildTrainingSet">Build Training Set From Current Data</button>
+            <button id="importInternetTraining">Import Internet Training File</button>
+            <button id="downloadTrainingGuide">Show GitHub Action Instructions</button>
+            <button id="clearTrainingSet">Clear Training Set</button>
+            <button id="exportTrainingSet">Export Training CSV</button>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Model Quality</h3>
+          <div id="modelQuality" class="audit"></div>
+          <div id="internetTrainingStatus" class="audit" style="margin-top:12px"></div>
+        </div>
+      </div>
+      <div class="grid two">
+        <div class="panel">
+          <h3>Variable Correlation Snapshot</h3>
+          <p class="muted">Correlation is not proof, but it shows which knobs are talking to each other behind the curtain.</p>
+          <div id="correlationPanel" class="audit"></div>
+        </div>
+        <div class="panel">
+          <h3>Recommended Model Inputs</h3>
+          <div class="audit">
+            <div class="audit-row"><span>Market</span><strong>DAM LBMP, RT LBMP, load forecast, actual load, congestion if available</strong></div>
+            <div class="audit-row"><span>Fuel</span><strong>EIA Henry Hub + user basis/transport + imported local gas index</strong></div>
+            <div class="audit-row"><span>Weather</span><strong>temperature, dew point, wind, humidity, cloud cover, HDD/CDD</strong></div>
+            <div class="audit-row"><span>Calendar</span><strong>hour, weekday/weekend, month, holiday, prior day and prior week same-hour prices</strong></div>
+            <div class="audit-row"><span>Plant</span><strong>heat rate, derate, start/no-load, min-run, aux load, actual run history</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="education" class="page">
+      <h2>Market Education</h2>
+      <div class="edu-grid">
+        <article><h3>DAM</h3><p>The Day-Ahead Market schedules energy for each operating hour ahead of real time. This website evaluates whether projected DAM pricing beats plant cost.</p></article>
+        <article><h3>LBMP</h3><p>Locational Based Marginal Pricing is the NYISO price at a location, zone, or generator bus. The right PTID/location matters because congestion and losses can move the price.</p></article>
+        <article><h3>Generator Bus / PTID</h3><p>The plant should use the most accurate generator-bus or settled pricing point available. Zone prices are useful for rough estimates, not final settlements.</p></article>
+        <article><h3>Fuel Variable Cost</h3><p>Gas price plus basis/transport multiplied by heat rate. This is the largest lever in most gas-fired margin decisions.</p></article>
+        <article><h3>BPCG / Uplift</h3><p>Bid Production Cost Guarantee and uplift can affect actual settlement. This simplified model includes a note field but does not calculate NYISO settlement uplift.</p></article>
+        <article><h3>Min-Run / Min-Down</h3><p>Suggested run blocks respect minimum run hours and simple startup allocation. Real-world commitment constraints may require more detailed modeling.</p></article>
+        <article><h3>Startup / No-Load</h3><p>Startup and no-load costs are allocated across selected run blocks to estimate net profitability and break-even LBMP.</p></article>
+        <article><h3>Settlement Caveat</h3><p>This is a decision-support forecast, not a settlement system. Actual NYISO settlements may differ because of bidding, dispatch, reserves, outages, deviations, uplift, and metering.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Indeck Silver Springs DAM Margin Website</span>
+    <span id="lastUpdated"></span>
+  </footer>
+
+  <script src="js/demoData.js"></script>
+  <script src="js/calculations.js"></script>
+  <script src="js/freeApiConnectors.js"></script>
+  <script src="js/forecastModel.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
