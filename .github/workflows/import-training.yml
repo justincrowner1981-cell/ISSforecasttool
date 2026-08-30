@@ -1,0 +1,49 @@
+name: Import Internet Training Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      start_date:
+        description: Start date (YYYY-MM-DD); blank uses configured history
+        required: false
+        type: string
+      end_date:
+        description: End date (YYYY-MM-DD); blank uses yesterday
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: import-internet-training
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Import and validate training rows
+        env:
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+          NCEI_TOKEN: ${{ secrets.NCEI_TOKEN }}
+          START_DATE: ${{ inputs.start_date }}
+          END_DATE: ${{ inputs.end_date }}
+        run: |
+          args=()
+          if [ -n "$START_DATE" ]; then args+=(--start "$START_DATE"); fi
+          if [ -n "$END_DATE" ]; then args+=(--end "$END_DATE"); fi
+          python scripts/import_internet_training.py "${args[@]}"
+      - name: Commit changed training data
+        run: |
+          if git diff --quiet -- data; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          git commit -m "data: update internet training set"
+          git push

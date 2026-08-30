@@ -1,0 +1,35 @@
+{
+  "plant": {
+    "name": "Indeck Silver Springs",
+    "latitude": 42.6598,
+    "longitude": -78.0845,
+    "timezone": "America/New_York"
+  },
+  "nyiso": {
+    "location_name": "CENTRL",
+    "location_type": "zone",
+    "dam_url_pattern": "https://mis.nyiso.com/public/csv/damlbmp/{yyyymmdd}damlbmp_zone_csv.zip",
+    "history_days": 90
+  },
+  "eia": {
+    "series_id": "PS0",
+    "history_days": 365
+  },
+  "nws": {
+    "user_agent": "ISSforecasttool/1.0 (operations contact configured in GitHub repository)"
+  },
+  "ncei": {
+    "dataset_id": "GHCND",
+    "station_id": "",
+    "search_radius_degrees": 0.5,
+    "history_days": 365
+  },
+  "validation": {
+    "max_age_hours": 36,
+    "minimum_market_rows": 1,
+    "lbmp_min": -1000,
+    "lbmp_max": 5000,
+    "gas_min": 0,
+    "gas_max": 100
+  }
+}

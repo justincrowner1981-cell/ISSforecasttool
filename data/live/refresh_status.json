@@ -1,0 +1,9 @@
+{
+  "generated_at": null,
+  "overall": "offline",
+  "sources": {
+    "eia": {"row_count": 0, "state": "offline", "error": "Refresh workflow has not completed"},
+    "nws": {"row_count": 0, "state": "offline", "error": "Refresh workflow has not completed"},
+    "nyiso": {"row_count": 0, "state": "offline", "error": "Refresh workflow has not completed"}
+  }
+}
