@@ -1,0 +1,151 @@
+{
+  "generated_at": "2026-08-31T20:41:51+00:00",
+  "row_count": 24,
+  "rows": [
+    {
+      "hour": "2026-09-01T00:00:00",
+      "lbmp": 39.25,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T01:00:00",
+      "lbmp": 36.52,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T02:00:00",
+      "lbmp": 34.91,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T03:00:00",
+      "lbmp": 32.99,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T04:00:00",
+      "lbmp": 33.01,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T05:00:00",
+      "lbmp": 35.75,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T06:00:00",
+      "lbmp": 41.47,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T07:00:00",
+      "lbmp": 47.34,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T08:00:00",
+      "lbmp": 44.81,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T09:00:00",
+      "lbmp": 46.96,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T10:00:00",
+      "lbmp": 49.78,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T11:00:00",
+      "lbmp": 52.57,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T12:00:00",
+      "lbmp": 52.68,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T13:00:00",
+      "lbmp": 58.58,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T14:00:00",
+      "lbmp": 59.07,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T15:00:00",
+      "lbmp": 71.19,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T16:00:00",
+      "lbmp": 68.35,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T17:00:00",
+      "lbmp": 80.22,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T18:00:00",
+      "lbmp": 89.15,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T19:00:00",
+      "lbmp": 79.41,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T20:00:00",
+      "lbmp": 68.99,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T21:00:00",
+      "lbmp": 57.79,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T22:00:00",
+      "lbmp": 53.36,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    },
+    {
+      "hour": "2026-09-01T23:00:00",
+      "lbmp": 48.25,
+      "location": "CENTRL",
+      "source": "NYISO DAM"
+    }
+  ],
+  "source_url": "https://mis.nyiso.com/public/csv/damlbmp/20260901damlbmp_zone_csv.zip"
+}
